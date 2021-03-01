@@ -12,7 +12,7 @@ locals {
   vpc_tags = merge(var.common_tags, local.extra_tags, map("Name", local.name))
 }
 
-resource "aws_vpc" "main" {
+resource "aws_vpc" "primary" {
   count                = var.create_vpc ? 1 : 0
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
@@ -20,7 +20,7 @@ resource "aws_vpc" "main" {
   tags                 = local.vpc_tags
 }
 
-resource "aws_vpc_dhcp_options" "main" {
+resource "aws_vpc_dhcp_options" "primary" {
   count                = var.create_vpc ? 1 : 0
   domain_name_servers  = ["127.0.0.1", "AmazonProvidedDNS"]
   ntp_servers          = ["127.0.0.1"]
@@ -42,8 +42,8 @@ resource "aws_internet_gateway" "gw" {
 }
 
 locals {
-  vpc_id                     = element(concat(aws_vpc.main.*.id, list("")), 0)
-  aws_vpc_dhcp_options_id    = element(concat(aws_vpc_dhcp_options.main.*.id, list("")), 0)
+  vpc_id                     = element(concat(aws_vpc.primary.*.id, list("")), 0)
+  aws_vpc_dhcp_options_id    = element(concat(aws_vpc_dhcp_options.primary.*.id, list("")), 0)
   aws_internet_gateway       = element(concat(aws_internet_gateway.gw.*.id, list("")), 0)
   private_subnets            = var.create_vpc ? aws_subnet.private_subnet.*.id : []
   subnet_names = [
@@ -60,7 +60,7 @@ data "aws_availability_zones" "available" {
 }
 
 resource "aws_subnet" "public_subnet" {
-  depends_on              = [aws_vpc.main, aws_internet_gateway.gw]
+  depends_on              = [aws_vpc.primary, aws_internet_gateway.gw]
   count                   = var.create_vpc ? length(var.public_subnets) : 0
   vpc_id                  = local.vpc_id
   availability_zone       = element(data.aws_availability_zones.available.names, count.index)
@@ -74,7 +74,7 @@ locals {
 }
 
 resource "aws_subnet" "private_subnet" {
-  depends_on        = [aws_vpc.main]
+  depends_on        = [aws_vpc.primary]
   count             = var.create_vpc ? length(var.private_subnets) : 0
   vpc_id            = local.vpc_id
   availability_zone = element(data.aws_availability_zones.available.names, count.index)
@@ -129,14 +129,14 @@ resource "aws_route" "public_gateway" {
 }
 
 resource "aws_route_table_association" "private_associations" {
-  depends_on     = [aws_vpc.main, aws_subnet.private_subnet]
+  depends_on     = [aws_vpc.primary, aws_subnet.private_subnet]
   count          = var.create_vpc ? length(var.public_subnets) : 0
   subnet_id      = element(aws_subnet.private_subnet.*.id, count.index)
   route_table_id = element(aws_route_table.private.*.id, 0)
 }
 
 resource "aws_route_table_association" "public_associations" {
-  depends_on     = [aws_vpc.main, aws_subnet.public_subnet]
+  depends_on     = [aws_vpc.primary, aws_subnet.public_subnet]
   count          = var.create_vpc ? length(var.public_subnets) : 0
   subnet_id      = element(aws_subnet.public_subnet.*.id, count.index)
   route_table_id = element(aws_route_table.public.*.id, 0)
