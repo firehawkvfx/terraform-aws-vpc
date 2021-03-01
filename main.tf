@@ -12,7 +12,7 @@ locals {
   vpc_tags = merge(var.common_tags, local.extra_tags, map("Name", local.name))
 }
 
-resource "aws_vpc" "primary" {
+resource "aws_vpc" "primary" { # primary should be the main vpc, or hub.
   count                = var.create_vpc ? 1 : 0
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
