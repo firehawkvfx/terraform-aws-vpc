@@ -57,7 +57,6 @@ variable "remote_cloud_public_ip_cidr" {
 variable "vpc_name" {
   description = "The name to associate with the VPC"
   type        = string
-  default     = "Main VPC"
 }
 
 variable "common_tags" {
