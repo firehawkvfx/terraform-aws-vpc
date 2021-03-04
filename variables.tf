@@ -21,19 +21,16 @@ variable "enable_nat_gateway" {
 variable "private_subnets" {
   description = "The list of private subnet CIDR blocks to place private instances within."
   type        = list(string)
-  # default     = ["10.4.1.0/24", "10.4.2.0/24"]
 }
 
 variable "public_subnets" {
   description = "The list of public subnet CIDR blocks to place public facing instances within."
   type        = list(string)
-  # default     = ["10.4.101.0/24", "10.4.102.0/24"]
 }
 
 variable "vpc_cidr" {
   description = "The CIDR block that contains all subnets within the VPC."
   type        = string
-  # default     = "10.4.0.0/16"
 }
 
 variable "deployer_ip_cidr" {
