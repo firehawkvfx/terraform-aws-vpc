@@ -42,17 +42,17 @@ resource "aws_internet_gateway" "gw" {
 }
 
 locals {
-  vpc_id                     = element(concat(aws_vpc.primary.*.id, list("")), 0)
-  aws_vpc_dhcp_options_id    = element(concat(aws_vpc_dhcp_options.primary.*.id, list("")), 0)
-  aws_internet_gateway       = element(concat(aws_internet_gateway.gw.*.id, list("")), 0)
-  private_subnets            = var.create_vpc ? aws_subnet.private_subnet.*.id : []
+  vpc_id                  = element(concat(aws_vpc.primary.*.id, list("")), 0)
+  aws_vpc_dhcp_options_id = element(concat(aws_vpc_dhcp_options.primary.*.id, list("")), 0)
+  aws_internet_gateway    = element(concat(aws_internet_gateway.gw.*.id, list("")), 0)
+  private_subnets         = var.create_vpc ? aws_subnet.private_subnet.*.id : []
   subnet_names = [
     for i in range(length(var.private_subnets)) : format("private%s_%s", i, local.name)
   ]
   public_subnets             = var.create_vpc ? aws_subnet.public_subnet.*.id : []
   public_subnets_cidr_blocks = var.public_subnets
-  private_route_table_ids = aws_route_table.private.*.id
-  public_route_table_ids  = aws_route_table.public.*.id
+  private_route_table_ids    = aws_route_table.private.*.id
+  public_route_table_ids     = aws_route_table.public.*.id
 }
 
 data "aws_availability_zones" "available" {
