@@ -141,12 +141,3 @@ resource "aws_route_table_association" "public_associations" {
   subnet_id      = element(aws_subnet.public_subnet.*.id, count.index)
   route_table_id = element(aws_route_table.public.*.id, 0)
 }
-
-module "consul_client_security_group" {
-  source              = "./modules/consul-client-security-group"
-  common_tags         = var.common_tags
-  create_vpc          = var.create_vpc
-  vpc_id              = local.vpc_id
-  vpc_cidr            = var.vpc_cidr
-  permitted_cidr_list = [var.deployer_ip_cidr, var.remote_cloud_private_ip_cidr, var.remote_cloud_public_ip_cidr]
-}

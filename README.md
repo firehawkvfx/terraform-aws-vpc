@@ -1,1 +1,1 @@
-Create an AWS VPC with private and public subnets and Open VPN gateway
+Create an AWS VPC with private and public subnets.

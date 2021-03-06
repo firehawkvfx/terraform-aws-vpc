@@ -46,7 +46,3 @@ output "subnet_names" {
   depends_on = [ aws_vpc.primary, aws_subnet.private_subnet ]
   value = local.subnet_names
 }
-
-output "consul_client_security_group" {
-  value = module.consul_client_security_group.consul_client_sg_id
-}
