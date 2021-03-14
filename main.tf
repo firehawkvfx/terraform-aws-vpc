@@ -22,6 +22,7 @@ resource "aws_vpc" "primary" { # primary should be the main vpc, or hub.
 
 resource "aws_vpc_dhcp_options" "primary" {
   count                = var.create_vpc ? 1 : 0
+  # domain_name          = "service.consul"
   domain_name_servers  = ["127.0.0.1", "AmazonProvidedDNS"]
   ntp_servers          = ["127.0.0.1"]
   netbios_name_servers = ["127.0.0.1"]
