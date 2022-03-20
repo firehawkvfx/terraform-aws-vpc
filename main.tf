@@ -80,21 +80,21 @@ resource "aws_subnet" "private_subnet" {
   vpc_id            = local.vpc_id
   availability_zone = element(data.aws_availability_zones.available.names, count.index)
   cidr_block        = element(var.private_subnets, count.index)
-  tags              = merge(var.common_tags, local.extra_tags, tomap({ "area" : "private" }), tomap({ "Name" : format("private%s_%s", count.index, local.name) }))
+  tags              = merge(var.common_tags, local.extra_tags, tomap({"area": "private"}), tomap({"Name": format("private%s_%s", count.index, local.name)}))
 }
 
 resource "aws_eip" "nat" {
   count      = var.create_vpc && var.enable_nat_gateway && var.sleep == false ? 1 : 0
   vpc        = true
   depends_on = [aws_internet_gateway.gw]
-  tags       = merge(var.common_tags, local.extra_tags, tomap({ "Name" : format("%s", local.name) }))
+  tags       = merge(var.common_tags, local.extra_tags, tomap({"Name": format("%s", local.name)}))
 }
 
 resource "aws_nat_gateway" "gw" { # We use a single nat gateway currently to save cost.
   count         = var.create_vpc && var.enable_nat_gateway && var.sleep == false ? 1 : 0
   allocation_id = aws_eip.nat[count.index].id
   subnet_id     = element(aws_subnet.public_subnet.*.id, count.index)
-  tags          = merge(var.common_tags, local.extra_tags, tomap({ "Name" : format("%s", local.name) }))
+  tags          = merge(var.common_tags, local.extra_tags, tomap({"Name": format("%s", local.name)}))
 }
 
 resource "aws_route_table" "private" {
